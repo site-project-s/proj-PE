@@ -1,0 +1,1121 @@
+{
+ "coletadoEm": "2026-09-10",
+ "locais": [
+  {
+   "id": "L18",
+   "nome": "Barraca",
+   "lat": -9.5551753,
+   "lon": -35.7721632,
+   "blocoMaisProximo": "LETRAS",
+   "distBlocoM": 68,
+   "itens": [
+    {
+     "item": "Balinha",
+     "preco": 0.5
+    },
+    {
+     "item": "Brigadeiro",
+     "preco": 3.0
+    },
+    {
+     "item": "Brownie",
+     "preco": 7.0
+    },
+    {
+     "item": "Coca Lata",
+     "preco": 6.0
+    },
+    {
+     "item": "Refri Lata (Outros)",
+     "preco": 4.0
+    },
+    {
+     "item": "Salgado",
+     "preco": 7.0
+    },
+    {
+     "item": "Tortilete",
+     "preco": 5.0
+    }
+   ]
+  },
+  {
+   "id": "L07",
+   "nome": "Barraca A",
+   "lat": -9.5566003,
+   "lon": -35.7795617,
+   "blocoMaisProximo": "DIREITO",
+   "distBlocoM": 47,
+   "itens": [
+    {
+     "item": "Coca Lata",
+     "preco": 7.0
+    },
+    {
+     "item": "Refri Lata (Outros)",
+     "preco": 6.0
+    },
+    {
+     "item": "Salgado",
+     "preco": 7.0
+    },
+    {
+     "item": "Sanduíche Natural",
+     "preco": 8.0
+    }
+   ]
+  },
+  {
+   "id": "L08",
+   "nome": "Barraca B",
+   "lat": -9.5557606,
+   "lon": -35.777875,
+   "blocoMaisProximo": "EDUCAÇÃO FISICA",
+   "distBlocoM": 78,
+   "itens": [
+    {
+     "item": "Bolo",
+     "preco": 6.0
+    },
+    {
+     "item": "Brigadeiro",
+     "preco": 6.0
+    },
+    {
+     "item": "Coco",
+     "preco": 8.0
+    },
+    {
+     "item": "Coxinha",
+     "preco": 6.0
+    },
+    {
+     "item": "Croissant",
+     "preco": 6.0
+    },
+    {
+     "item": "Hambúrguer",
+     "preco": 6.0
+    },
+    {
+     "item": "Lasanha",
+     "preco": 14.0
+    },
+    {
+     "item": "Macarronada",
+     "preco": 14.0
+    },
+    {
+     "item": "Pastel",
+     "preco": 6.0
+    },
+    {
+     "item": "Salgado",
+     "preco": 6.0
+    },
+    {
+     "item": "Sanduíche Natural",
+     "preco": 6.0
+    },
+    {
+     "item": "Suco",
+     "preco": 5.0
+    },
+    {
+     "item": "Torta",
+     "preco": 7.0
+    },
+    {
+     "item": "Tortilete",
+     "preco": 4.0
+    }
+   ]
+  },
+  {
+   "id": "L20",
+   "nome": "Barraca D",
+   "lat": -9.555104438224397,
+   "lon": -35.7771312866915,
+   "blocoMaisProximo": "CIENCIAS ATMOSFERICAS",
+   "distBlocoM": 73,
+   "itens": [
+    {
+     "item": "Agua",
+     "preco": 2.0
+    },
+    {
+     "item": "Bolo",
+     "preco": 8.0
+    },
+    {
+     "item": "Café",
+     "preco": 2.0
+    },
+    {
+     "item": "Caçulinha",
+     "preco": 3.0
+    },
+    {
+     "item": "Coca Lata",
+     "preco": 6.0
+    },
+    {
+     "item": "Pão de queijo com carne",
+     "preco": 10.0
+    },
+    {
+     "item": "Salgado",
+     "preco": 7.0
+    },
+    {
+     "item": "Sanduíche Natural",
+     "preco": 8.0
+    },
+    {
+     "item": "Suco",
+     "preco": 6.0
+    },
+    {
+     "item": "Água com Gás",
+     "preco": 3.0
+    }
+   ]
+  },
+  {
+   "id": "L01",
+   "nome": "CTEC (M,M)",
+   "lat": -9.5517418,
+   "lon": -35.7752827,
+   "blocoMaisProximo": "ENGENHARIA AMBIENTAL",
+   "distBlocoM": 81,
+   "itens": [
+    {
+     "item": "Brownie",
+     "preco": 6.99
+    },
+    {
+     "item": "Café",
+     "preco": 2.0
+    },
+    {
+     "item": "Caçulinha",
+     "preco": 4.0
+    },
+    {
+     "item": "Coca Lata",
+     "preco": 6.0
+    },
+    {
+     "item": "Coca Litro",
+     "preco": 10.0
+    },
+    {
+     "item": "Coco",
+     "preco": 5.0
+    },
+    {
+     "item": "H2O / Aquarius",
+     "preco": 8.0
+    },
+    {
+     "item": "Hambúrguer",
+     "preco": 14.0
+    },
+    {
+     "item": "Lasanha",
+     "preco": 18.0
+    },
+    {
+     "item": "Macarronada",
+     "preco": 16.0
+    },
+    {
+     "item": "Misto Quente",
+     "preco": 11.0
+    },
+    {
+     "item": "Monte Suíço",
+     "preco": 5.99
+    },
+    {
+     "item": "Red Bull",
+     "preco": 15.0
+    },
+    {
+     "item": "Salgado",
+     "preco": 8.0
+    },
+    {
+     "item": "Sanduíche Natural",
+     "preco": 7.0
+    },
+    {
+     "item": "Suco",
+     "preco": 6.0
+    },
+    {
+     "item": "Suco Delvalle",
+     "preco": 8.0
+    },
+    {
+     "item": "Tapioca",
+     "preco": 9.0
+    },
+    {
+     "item": "Torta",
+     "preco": 10.0
+    }
+   ]
+  },
+  {
+   "id": "L06",
+   "nome": "Coco",
+   "lat": -9.5552357,
+   "lon": -35.7772458,
+   "blocoMaisProximo": "BIBLIOTECA",
+   "distBlocoM": 81,
+   "itens": [
+    {
+     "item": "Agua",
+     "preco": 2.5
+    },
+    {
+     "item": "Amendoim",
+     "preco": 1.5
+    },
+    {
+     "item": "Biscoito",
+     "preco": 3.5
+    },
+    {
+     "item": "Café",
+     "preco": 2.0
+    },
+    {
+     "item": "Coca Lata",
+     "preco": 6.0
+    },
+    {
+     "item": "Coco",
+     "preco": 5.0
+    },
+    {
+     "item": "Gula",
+     "preco": 5.0
+    },
+    {
+     "item": "Sanduíche Natural",
+     "preco": 6.5
+    },
+    {
+     "item": "Tortilete",
+     "preco": 3.0
+    },
+    {
+     "item": "Trident",
+     "preco": 3.5
+    }
+   ]
+  },
+  {
+   "id": "L22",
+   "nome": "Dentro FANUT",
+   "lat": -9.5568703,
+   "lon": -35.7757016,
+   "blocoMaisProximo": "NUTRIÇÃO",
+   "distBlocoM": 23,
+   "itens": [
+    {
+     "item": "Agua",
+     "preco": 2.0
+    },
+    {
+     "item": "Amendoim",
+     "preco": 2.0
+    },
+    {
+     "item": "Balinha",
+     "preco": 0.2
+    },
+    {
+     "item": "Biscoito",
+     "preco": 3.0
+    },
+    {
+     "item": "Cremosinho",
+     "preco": 2.0
+    },
+    {
+     "item": "Paçoca",
+     "preco": 0.75
+    },
+    {
+     "item": "Trident",
+     "preco": 3.5
+    },
+    {
+     "item": "Trufa",
+     "preco": 3.5
+    },
+    {
+     "item": "Água com Gás",
+     "preco": 3.5
+    }
+   ]
+  },
+  {
+   "id": "L13",
+   "nome": "FOUFAL porta",
+   "lat": -9.557527983269901,
+   "lon": -35.77679559936422,
+   "blocoMaisProximo": "ODONTOLOGIA",
+   "distBlocoM": 19,
+   "itens": [
+    {
+     "item": "Agua",
+     "preco": 2.0
+    },
+    {
+     "item": "Bolo",
+     "preco": 4.0
+    },
+    {
+     "item": "Café",
+     "preco": 2.0
+    },
+    {
+     "item": "Caçulinha",
+     "preco": 3.0
+    },
+    {
+     "item": "Coca Lata",
+     "preco": 6.0
+    },
+    {
+     "item": "Coco",
+     "preco": 6.0
+    },
+    {
+     "item": "Coxinha",
+     "preco": 7.0
+    },
+    {
+     "item": "Croissant",
+     "preco": 7.0
+    },
+    {
+     "item": "H2O / Aquarius",
+     "preco": 7.0
+    },
+    {
+     "item": "Monster",
+     "preco": 14.0
+    },
+    {
+     "item": "Refri Lata (Outros)",
+     "preco": 6.0
+    },
+    {
+     "item": "Salgado",
+     "preco": 7.0
+    },
+    {
+     "item": "Suco",
+     "preco": 5.0
+    },
+    {
+     "item": "Tortilete",
+     "preco": 2.5
+    },
+    {
+     "item": "Trufa",
+     "preco": 3.5
+    },
+    {
+     "item": "Água com Gás",
+     "preco": 3.5
+    }
+   ]
+  },
+  {
+   "id": "L19",
+   "nome": "ICHICA",
+   "lat": -9.553693174387679,
+   "lon": -35.77239216127857,
+   "blocoMaisProximo": "ICHCA (BLOCO)",
+   "distBlocoM": 42,
+   "itens": [
+    {
+     "item": "Agua",
+     "preco": 2.0
+    },
+    {
+     "item": "Bolo",
+     "preco": 5.0
+    },
+    {
+     "item": "Broa",
+     "preco": 2.0
+    },
+    {
+     "item": "Coca Lata",
+     "preco": 5.0
+    },
+    {
+     "item": "Coxinha",
+     "preco": 5.0
+    },
+    {
+     "item": "Salgado",
+     "preco": 5.0
+    },
+    {
+     "item": "Torta",
+     "preco": 7.0
+    },
+    {
+     "item": "Tortilete",
+     "preco": 5.0
+    }
+   ]
+  },
+  {
+   "id": "L03",
+   "nome": "IQB",
+   "lat": -9.5539391,
+   "lon": -35.7750843,
+   "blocoMaisProximo": "QUIMICA E BIOTECNOLOGIA",
+   "distBlocoM": 48,
+   "itens": [
+    {
+     "item": "Agua",
+     "preco": 3.0
+    },
+    {
+     "item": "Bolo",
+     "preco": 12.0
+    },
+    {
+     "item": "Brownie",
+     "preco": 7.0
+    },
+    {
+     "item": "Caçulinha",
+     "preco": 3.5
+    },
+    {
+     "item": "Coca Lata",
+     "preco": 6.0
+    },
+    {
+     "item": "Coca Litro",
+     "preco": 10.0
+    },
+    {
+     "item": "Lasanha",
+     "preco": 15.0
+    },
+    {
+     "item": "Pastel",
+     "preco": 9.0
+    },
+    {
+     "item": "Salgado",
+     "preco": 7.0
+    },
+    {
+     "item": "Água com Gás",
+     "preco": 4.0
+    }
+   ]
+  },
+  {
+   "id": "L11",
+   "nome": "Lanchonete Fim do mundo",
+   "lat": -9.5517716,
+   "lon": -35.7708541,
+   "blocoMaisProximo": "ICHCA (BLOCO)",
+   "distBlocoM": 257,
+   "itens": [
+    {
+     "item": "Balinha",
+     "preco": 1.5
+    },
+    {
+     "item": "Misto Quente",
+     "preco": 6.0
+    },
+    {
+     "item": "Salgado",
+     "preco": 5.0
+    }
+   ]
+  },
+  {
+   "id": "L09",
+   "nome": "Lanchonete São Jorge",
+   "lat": -9.5542947,
+   "lon": -35.7747286,
+   "blocoMaisProximo": "MATEMATICA ANTIGO",
+   "distBlocoM": 26,
+   "itens": [
+    {
+     "item": "Brownie",
+     "preco": 6.5
+    },
+    {
+     "item": "Coca Lata",
+     "preco": 5.0
+    },
+    {
+     "item": "Coxinha",
+     "preco": 7.0
+    },
+    {
+     "item": "Guaicurus",
+     "preco": 2.5
+    },
+    {
+     "item": "Salgado",
+     "preco": 7.0
+    },
+    {
+     "item": "Trufa",
+     "preco": 4.0
+    }
+   ]
+  },
+  {
+   "id": "L17",
+   "nome": "Ninha e cia",
+   "lat": -9.553563797274025,
+   "lon": -35.77494992430694,
+   "blocoMaisProximo": "QUIMICA E BIOTECNOLOGIA",
+   "distBlocoM": 27,
+   "itens": [
+    {
+     "item": "Bolo",
+     "preco": 9.0
+    },
+    {
+     "item": "Coxinha",
+     "preco": 7.0
+    },
+    {
+     "item": "Cremosinho",
+     "preco": 2.5
+    },
+    {
+     "item": "Flau Gourmet",
+     "preco": 7.0
+    },
+    {
+     "item": "Mousse",
+     "preco": 7.0
+    },
+    {
+     "item": "Picolé Ao Leite",
+     "preco": 2.5
+    },
+    {
+     "item": "Picolé Premium",
+     "preco": 4.5
+    },
+    {
+     "item": "Picolé Skimo",
+     "preco": 4.0
+    },
+    {
+     "item": "Pudim",
+     "preco": 7.0
+    },
+    {
+     "item": "Salgado",
+     "preco": 7.0
+    },
+    {
+     "item": "Sorvete 1L",
+     "preco": 18.0
+    },
+    {
+     "item": "Sorvete 250ml",
+     "preco": 6.0
+    },
+    {
+     "item": "Torta",
+     "preco": 7.0
+    }
+   ]
+  },
+  {
+   "id": "L04",
+   "nome": "Passaporte Juli",
+   "lat": -9.5541103,
+   "lon": -35.77536,
+   "blocoMaisProximo": "FISICA",
+   "distBlocoM": 22,
+   "itens": [
+    {
+     "item": "Hambúrguer",
+     "preco": 13.0
+    },
+    {
+     "item": "Misto Quente",
+     "preco": 14.0
+    },
+    {
+     "item": "Passaporte",
+     "preco": 18.0
+    },
+    {
+     "item": "Suco",
+     "preco": 6.0
+    }
+   ]
+  },
+  {
+   "id": "L10",
+   "nome": "Pitstop Lanches",
+   "lat": -9.5535711,
+   "lon": -35.7736802,
+   "blocoMaisProximo": "SERVIÇO SOCIAL",
+   "distBlocoM": 72,
+   "itens": [
+    {
+     "item": "Agua",
+     "preco": 2.0
+    },
+    {
+     "item": "Balinha",
+     "preco": 0.25
+    },
+    {
+     "item": "Brownie",
+     "preco": 6.0
+    },
+    {
+     "item": "Café",
+     "preco": 1.5
+    },
+    {
+     "item": "Coca Lata",
+     "preco": 5.0
+    },
+    {
+     "item": "Garrafinha",
+     "preco": 3.0
+    },
+    {
+     "item": "Paçoca",
+     "preco": 1.0
+    },
+    {
+     "item": "Salgado",
+     "preco": 7.0
+    },
+    {
+     "item": "Água com Gás",
+     "preco": 2.5
+    }
+   ]
+  },
+  {
+   "id": "L12",
+   "nome": "R.U",
+   "lat": -9.55181944,
+   "lon": -35.77095,
+   "blocoMaisProximo": "ICHCA (BLOCO)",
+   "distBlocoM": 246,
+   "itens": [
+    {
+     "item": "Lasanha",
+     "preco": 3.0
+    },
+    {
+     "item": "Tortilete",
+     "preco": 3.0
+    }
+   ]
+  },
+  {
+   "id": "L02",
+   "nome": "Sabor Apaixona",
+   "lat": -9.552645,
+   "lon": -35.7752591,
+   "blocoMaisProximo": "PROTEQ",
+   "distBlocoM": 17,
+   "itens": [
+    {
+     "item": "Agua",
+     "preco": 2.5
+    },
+    {
+     "item": "Café",
+     "preco": 3.0
+    },
+    {
+     "item": "Coca Lata",
+     "preco": 6.0
+    },
+    {
+     "item": "Coco",
+     "preco": 5.0
+    },
+    {
+     "item": "Coxinha",
+     "preco": 6.0
+    },
+    {
+     "item": "Monster",
+     "preco": 13.0
+    },
+    {
+     "item": "Red Bull",
+     "preco": 11.0
+    },
+    {
+     "item": "Refrigerante KS",
+     "preco": 4.0
+    },
+    {
+     "item": "Salgado",
+     "preco": 7.0
+    },
+    {
+     "item": "Suco",
+     "preco": 6.0
+    },
+    {
+     "item": "Torta",
+     "preco": 12.0
+    },
+    {
+     "item": "Tortilete",
+     "preco": 4.5
+    },
+    {
+     "item": "Água com Gás",
+     "preco": 3.5
+    }
+   ]
+  },
+  {
+   "id": "L15",
+   "nome": "UNILANCHES",
+   "lat": -9.556542021812236,
+   "lon": -35.77606034726841,
+   "blocoMaisProximo": "NUTRIÇÃO",
+   "distBlocoM": 32,
+   "itens": [
+    {
+     "item": "Agua",
+     "preco": 2.5
+    },
+    {
+     "item": "Biscoito",
+     "preco": 3.0
+    },
+    {
+     "item": "Café",
+     "preco": 2.0
+    },
+    {
+     "item": "Caçulinha",
+     "preco": 3.5
+    },
+    {
+     "item": "Coca Lata",
+     "preco": 6.0
+    },
+    {
+     "item": "Coco",
+     "preco": 5.0
+    },
+    {
+     "item": "Coxinha",
+     "preco": 7.0
+    },
+    {
+     "item": "Gula",
+     "preco": 4.5
+    },
+    {
+     "item": "H2O / Aquarius",
+     "preco": 6.0
+    },
+    {
+     "item": "Lasanha",
+     "preco": 12.0
+    },
+    {
+     "item": "Mousse",
+     "preco": 3.5
+    },
+    {
+     "item": "Pastel",
+     "preco": 7.0
+    },
+    {
+     "item": "Refri Lata (Outros)",
+     "preco": 6.0
+    },
+    {
+     "item": "Salgado",
+     "preco": 4.0
+    },
+    {
+     "item": "Sanduíche Natural",
+     "preco": 8.0
+    },
+    {
+     "item": "Suco",
+     "preco": 5.0
+    },
+    {
+     "item": "Torta",
+     "preco": 7.0
+    },
+    {
+     "item": "Tortilete",
+     "preco": 3.0
+    },
+    {
+     "item": "Água com Gás",
+     "preco": 3.0
+    }
+   ]
+  },
+  {
+   "id": "L14",
+   "nome": "UNIVERPRINT",
+   "lat": -9.556903171081972,
+   "lon": -35.77665465848455,
+   "blocoMaisProximo": "ODONTOLOGIA",
+   "distBlocoM": 54,
+   "itens": [
+    {
+     "item": "Café",
+     "preco": 2.5
+    }
+   ]
+  }
+ ],
+ "blocos": [
+  {
+   "id": "B01",
+   "nome": "PSICOLOGIA",
+   "lat": -9.556284323056785,
+   "lon": -35.77420836147713
+  },
+  {
+   "id": "B02",
+   "nome": "FARMACOLOGIA",
+   "lat": -9.556613174303886,
+   "lon": -35.77514543575521
+  },
+  {
+   "id": "B03",
+   "nome": "ENFERMAGEM",
+   "lat": -9.556414028997636,
+   "lon": -35.77533430149443
+  },
+  {
+   "id": "B04",
+   "nome": "NUTRIÇÃO",
+   "lat": -9.556712079454693,
+   "lon": -35.77582984423202
+  },
+  {
+   "id": "B05",
+   "nome": "ODONTOLOGIA",
+   "lat": -9.557387168595454,
+   "lon": -35.7766989052248
+  },
+  {
+   "id": "B06",
+   "nome": "BIBLIOTECONOMIA",
+   "lat": -9.556389732228448,
+   "lon": -35.77652133262286
+  },
+  {
+   "id": "B07",
+   "nome": "BIBLIOTECA",
+   "lat": -9.555528880860724,
+   "lon": -35.77656619270903
+  },
+  {
+   "id": "B08",
+   "nome": "CIENCIAS ATMOSFERICAS",
+   "lat": -9.554578017315622,
+   "lon": -35.77673503800695
+  },
+  {
+   "id": "B09",
+   "nome": "REITORIA",
+   "lat": -9.556608629377275,
+   "lon": -35.77862866508563
+  },
+  {
+   "id": "B10",
+   "nome": "DIREITO",
+   "lat": -9.557003834654793,
+   "lon": -35.7796736905529
+  },
+  {
+   "id": "B11",
+   "nome": "EDUCAÇÃO FISICA",
+   "lat": -9.555752360755484,
+   "lon": -35.77858403524756
+  },
+  {
+   "id": "B12",
+   "nome": "COMPUTAÇÃO",
+   "lat": -9.553330483946516,
+   "lon": -35.77687228072143
+  },
+  {
+   "id": "B13",
+   "nome": "COMUNICAÇÃO SOCIAL (1)",
+   "lat": -9.552506597822575,
+   "lon": -35.77558518064907
+  },
+  {
+   "id": "B14",
+   "nome": "ARQUITETURA E URBANISMO",
+   "lat": -9.551151764906983,
+   "lon": -35.77470430622839
+  },
+  {
+   "id": "B15",
+   "nome": "ENGENHARIA AMBIENTAL",
+   "lat": -9.551451633903783,
+   "lon": -35.77460426328663
+  },
+  {
+   "id": "B16",
+   "nome": "CTEC (BLOCO)",
+   "lat": -9.552143858698656,
+   "lon": -35.77423543772576
+  },
+  {
+   "id": "B17",
+   "nome": "QUIMICA E BIOTECNOLOGIA",
+   "lat": -9.553674063238219,
+   "lon": -35.7747340267212
+  },
+  {
+   "id": "B18",
+   "nome": "FISICA",
+   "lat": -9.554104506165988,
+   "lon": -35.77555764576756
+  },
+  {
+   "id": "B19",
+   "nome": "SERVIÇO SOCIAL",
+   "lat": -9.554040047603069,
+   "lon": -35.77413944935302
+  },
+  {
+   "id": "B20",
+   "nome": "MATEMATICA ANTIGO",
+   "lat": -9.554408726289314,
+   "lon": -35.77493549681338
+  },
+  {
+   "id": "B21",
+   "nome": "CEDU",
+   "lat": -9.555224927684927,
+   "lon": -35.77570435092002
+  },
+  {
+   "id": "B22",
+   "nome": "CIENCIAS BIOLOGICAS E SAUDE",
+   "lat": -9.558161755171325,
+   "lon": -35.77610765705199
+  },
+  {
+   "id": "B23",
+   "nome": "MEDICINA",
+   "lat": -9.558240063671358,
+   "lon": -35.77715589842079
+  },
+  {
+   "id": "B24",
+   "nome": "CIENCIAS SOCIAIS",
+   "lat": -9.555897461935794,
+   "lon": -35.77207854116614
+  },
+  {
+   "id": "B25",
+   "nome": "LETRAS",
+   "lat": -9.555180524740356,
+   "lon": -35.77278355059877
+  },
+  {
+   "id": "B26",
+   "nome": "ICHCA (BLOCO)",
+   "lat": -9.553353747073107,
+   "lon": -35.77256587934328
+  },
+  {
+   "id": "B27",
+   "nome": "MATEMATICA NOVO",
+   "lat": -9.555024627917499,
+   "lon": -35.77409169323866
+  },
+  {
+   "id": "B28",
+   "nome": "HU",
+   "lat": -9.559268708343355,
+   "lon": -35.77940189733457
+  },
+  {
+   "id": "B29",
+   "nome": "FORUM",
+   "lat": -9.557771078364045,
+   "lon": -35.78009605642816
+  },
+  {
+   "id": "B30",
+   "nome": "COPEVE",
+   "lat": -9.557385675698598,
+   "lon": -35.77758798946778
+  },
+  {
+   "id": "B31",
+   "nome": "CIED",
+   "lat": -9.557728663435899,
+   "lon": -35.77735804066376
+  },
+  {
+   "id": "B32",
+   "nome": "FEAC",
+   "lat": -9.554707177593682,
+   "lon": -35.7738408487235
+  },
+  {
+   "id": "B33",
+   "nome": "LCCV",
+   "lat": -9.552856169871912,
+   "lon": -35.77402519033378
+  },
+  {
+   "id": "B34",
+   "nome": "PROTEQ",
+   "lat": -9.55249597986299,
+   "lon": -35.77530695939588
+  },
+  {
+   "id": "B35",
+   "nome": "COMUNICAÇÃO SOCIAL (2)",
+   "lat": -9.552962509507463,
+   "lon": -35.77622253165866
+  },
+  {
+   "id": "B36",
+   "nome": "IEFE",
+   "lat": -9.5558021,
+   "lon": -35.7786515
+  }
+ ]
+}

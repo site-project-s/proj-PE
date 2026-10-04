@@ -1,0 +1,82 @@
+* { box-sizing: border-box; }
+html, body { margin: 0; height: 100%; font-family: system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif; color: #1a1a1a; }
+
+.layout { display: grid; grid-template-columns: 380px 1fr; height: 100dvh; }
+.painel { display: flex; flex-direction: column; min-height: 0; border-right: 1px solid #ddd; background: #fff; }
+.painel-topo { padding: 12px; border-bottom: 1px solid #eee; }
+.painel-topo h1 { font-size: 18px; margin: 0 0 8px; }
+.lista { overflow-y: auto; flex: 1; }
+.mapa-area { min-height: 0; position: relative; }
+.mapa-area > div { height: 100%; width: 100%; }
+
+.busca { width: 100%; padding: 10px; font-size: 16px; border: 1px solid #bbb; border-radius: 8px; }
+.linha { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 8px; }
+.linha select, .linha button { padding: 8px; font-size: 14px; border: 1px solid #bbb; border-radius: 8px; background: #f7f7f7; cursor: pointer; }
+.linha button.ativo { background: #1f4e79; color: #fff; border-color: #1f4e79; }
+.chips { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 8px; }
+.chip { padding: 4px 10px; font-size: 13px; border-radius: 999px; border: 1px solid #bbb; background: #fff; cursor: pointer; }
+.chip:hover { background: #eef5fb; }
+.resumo { font-size: 13px; color: #555; margin-top: 8px; }
+.aviso { font-size: 12px; color: #777; padding: 12px; }
+
+.card { padding: 12px; border-bottom: 1px solid #eee; cursor: pointer; }
+.card:hover { background: #f5f9fd; }
+.card.sel { background: #e8f1fa; border-left: 4px solid #1f4e79; }
+.card-topo { display: flex; justify-content: space-between; gap: 8px; align-items: baseline; }
+.card-nome { font-weight: 600; }
+.card-dist { font-size: 13px; color: #1f4e79; white-space: nowrap; }
+.card-sub { font-size: 13px; color: #666; margin: 2px 0 6px; }
+.itens { display: grid; grid-template-columns: 1fr auto; gap: 2px 12px; font-size: 14px; }
+.itens .preco { font-variant-numeric: tabular-nums; font-weight: 600; text-align: right; }
+.itens .mais-barato { color: #1e7a3c; }
+.rota { display: inline-block; margin-top: 6px; font-size: 13px; color: #1f4e79; }
+.vazio { padding: 20px 12px; color: #666; }
+
+@media (max-width: 800px) {
+  .layout { grid-template-columns: 1fr; grid-template-rows: 42dvh 1fr; }
+  .mapa-area { order: -1; }
+  .painel { border-right: none; border-top: 1px solid #ddd; }
+}
+
+/* ---------- Conta, comunidade e modais ---------- */
+.topo-linha { display: flex; justify-content: space-between; align-items: center; gap: 8px; margin-bottom: 8px; }
+.topo-linha h1 { margin: 0; }
+.conta { display: flex; align-items: center; gap: 8px; font-size: 13px; white-space: nowrap; }
+.btn-link { background: none; border: none; padding: 0; color: #1f4e79; cursor: pointer; font-size: inherit; text-decoration: underline; }
+.btn-link.perigo { color: #b00020; margin-left: 10px; }
+.btn-mini { padding: 5px 10px; font-size: 13px; border-radius: 8px; border: 1px solid #1f4e79; background: #fff; color: #1f4e79; cursor: pointer; }
+.btn-mini:hover { background: #eef5fb; }
+.btn-primario { padding: 10px 14px; font-size: 15px; border: none; border-radius: 8px; background: #1f4e79; color: #fff; cursor: pointer; }
+.btn-primario:disabled { opacity: .6; cursor: wait; }
+.btn-popup { margin-top: 6px; padding: 5px 8px; font-size: 13px; border: 1px solid #1f4e79; border-radius: 6px; background: #fff; color: #1f4e79; cursor: pointer; }
+
+.msg-erro { color: #b00020; font-size: 13px; margin: 8px 0 0; }
+.msg-ok { color: #1e7a3c; font-size: 13px; margin: 8px 0 0; }
+.miudo { font-size: 12px; color: #777; margin: 4px 0 0; }
+
+.acoes { display: flex; justify-content: space-between; align-items: center; margin-top: 8px; }
+.acoes .rota { margin-top: 0; }
+.comunidade-resumo { font-size: 13px; color: #444; margin-top: 8px; }
+.estrelas-fixas { color: #f59e0b; letter-spacing: 1px; }
+.regs { margin-top: 8px; border-top: 1px dashed #ccc; padding-top: 4px; }
+.reg { padding: 6px 0; border-bottom: 1px solid #f0f0f0; font-size: 14px; }
+.reg-topo { display: flex; justify-content: space-between; gap: 8px; }
+.reg-topo .preco { font-weight: 600; font-variant-numeric: tabular-nums; }
+.reg-texto { margin: 2px 0; color: #333; font-style: italic; }
+.reg-rodape { font-size: 12px; color: #777; }
+
+.modal-fundo { position: fixed; inset: 0; background: rgba(0,0,0,.45); display: flex; align-items: center; justify-content: center; z-index: 2000; padding: 12px; }
+.modal { background: #fff; border-radius: 12px; width: 100%; max-width: 420px; max-height: 92dvh; overflow-y: auto; padding: 16px; }
+.modal-topo { display: flex; justify-content: space-between; align-items: center; gap: 8px; margin-bottom: 8px; }
+.modal-topo h2 { font-size: 17px; margin: 0; }
+.fechar { background: none; border: none; font-size: 18px; cursor: pointer; }
+.form { display: flex; flex-direction: column; gap: 12px; }
+.form label, .form .rotulo { display: flex; flex-direction: column; gap: 4px; font-size: 14px; }
+.form input, .form textarea { padding: 9px; font-size: 16px; border: 1px solid #bbb; border-radius: 8px; font-family: inherit; }
+.troca { font-size: 14px; margin: 0; text-align: center; }
+.estrelas-input { display: flex; gap: 4px; margin-top: 4px; }
+.estrelas-input button { font-size: 28px; line-height: 1; background: none; border: none; color: #ccc; cursor: pointer; padding: 0 2px; }
+.estrelas-input button.on { color: #f59e0b; }
+
+/* O mapa (Leaflet) usa z-index altos; garante que os modais fiquem por cima */
+.leaflet-container { z-index: 0; }

@@ -1,0 +1,9 @@
+{
+  // Worker "só de arquivos estáticos": não tem código, a Cloudflare serve a pasta out/ direto.
+  "name": "lanches-ufal",
+  "compatibility_date": "2026-10-01",
+  "assets": {
+    "directory": "./out",
+    "not_found_handling": "404-page"
+  }
+}
