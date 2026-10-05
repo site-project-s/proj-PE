@@ -77,6 +77,12 @@ Resumo: suba o projeto para o GitHub → Cloudflare, *Workers & Pages → Create
 build `npm run build`, deploy `npx wrangler deploy` → cadastre `NEXT_PUBLIC_SUPABASE_URL` e
 `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` como **variáveis de build**.
 
+## Visual no celular
+
+No celular (telas de até 800 px) o mapa ocupa a tela toda, a busca e os filtros flutuam no topo
+(filtros em uma linha rolável) e a lista vira uma "gaveta" que se arrasta: recolhida, meio ou cheia.
+Também há atalho para "Adicionar à tela inicial" (manifest e ícones em `public/`).
+
 ## Observações
 
 - Distâncias em linha reta (Haversine); o tempo a pé assume cerca de 5 km/h.

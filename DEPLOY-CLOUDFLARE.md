@@ -92,3 +92,35 @@ O build local lê o `.env.local`, então as variáveis já entram no site. O com
 | "Failed to fetch" ao criar conta | URL do Supabase incorreta (confira o `https://...supabase.co`, sem barra no fim) |
 | Mapa em branco | Bloqueio de rede aos tiles do OpenStreetMap; teste em outra rede |
 | Página 404 em endereço digitado à mão | Normal: o site tem uma única página (`/`) |
+
+---
+
+## Atualizar o site depois de mudar o projeto (ex.: nova versão visual para celular)
+
+### Se você publicou pela Opção A (GitHub)
+1. Descompacte a nova versão **por cima** da sua pasta `lanches-ufal`, aceitando substituir os arquivos.
+   Não apague a pasta oculta `.git` nem o arquivo `.env.local`.
+2. (Só se o `package.json` mudou) `npm install`
+3. Teste local: `npm run dev` e abra http://localhost:3000
+4. Envie para o GitHub:
+   ```bash
+   git add .
+   git commit -m "Nova versão: layout para celular"
+   git push
+   ```
+5. A Cloudflare detecta o push e publica sozinha. Acompanhe em **Workers & Pages → lanches-ufal → Deployments**
+   (status "Success" = no ar). Leva cerca de 1 a 3 minutos.
+6. No celular, se ainda aparecer a versão antiga, recarregue a página (ou feche e abra o navegador).
+   Se você "adicionou à tela inicial" antes, remova o atalho e adicione de novo.
+
+### Se você publicou pela Opção B (direto do computador)
+```bash
+npm run deploy
+```
+
+### Se você trocou a pasta inteira (sem .git)
+Copie de volta a pasta `.git` e o `.env.local` da versão antiga, ou rode `npm run deploy` (Opção B).
+
+### Conferir
+Abra o endereço `.workers.dev` no celular, toque em um ponto do mapa (a lista deve subir até o meio da tela) e
+arraste a alça da lista para cima e para baixo.

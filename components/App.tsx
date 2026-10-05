@@ -1,7 +1,8 @@
 "use client";
 
 import dynamic from "next/dynamic";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState, type CSSProperties, type KeyboardEvent as TecladoEvento, type PointerEvent as PonteiroEvento } from "react";
+import { flushSync } from "react-dom";
 import dadosBrutos from "../data/lanches.json";
 import {
   criarRegistro,
@@ -20,6 +21,16 @@ import Estrelas from "./Estrelas";
 import RegistroModal from "./RegistroModal";
 
 const dados = dadosBrutos as Dados;
+
+type Folha = "min" | "meio" | "cheio";
+const ORDEM_FOLHA: Folha[] = ["cheio", "meio", "min"];
+const PICO_PX = 96; // altura visível da lista recolhida
+const ehMobile = () => typeof window !== "undefined" && window.matchMedia("(max-width: 800px)").matches;
+const VISIVEL_CSS: Record<Folha, string> = {
+  min: `${PICO_PX}px`,
+  meio: "50dvh",
+  cheio: "calc(100dvh - 132px - env(safe-area-inset-top))", // = --altura-folha no CSS
+};
 const COMUNIDADE_ATIVA = supabase !== null;
 
 // Leaflet usa `window`: o mapa só pode ser carregado no navegador.
@@ -46,6 +57,15 @@ export default function App() {
   const [selecionado, setSelecionado] = useState<string | null>(null);
   const [mostrarBlocos, setMostrarBlocos] = useState(false);
   const [erroGps, setErroGps] = useState<string | null>(null);
+  const [menuConta, setMenuConta] = useState(false);
+
+  // Lista "gaveta" no celular: recolhida / meio / cheia (arrastável)
+  const [folha, setFolha] = useState<Folha>("meio");
+  const folhaRef = useRef<HTMLElement | null>(null);
+  const alturaFolha = () => folhaRef.current?.offsetHeight ?? window.innerHeight * 0.88;
+  const visivelPx = (f: Folha) => (f === "min" ? PICO_PX : f === "meio" ? window.innerHeight * 0.5 : alturaFolha());
+  const offsetPx = (f: Folha) => alturaFolha() - visivelPx(f);
+  const arrasto = useRef<{ y0: number; off0: number; yUlt: number; tUlt: number; v: number; moveu: boolean } | null>(null);
 
   // Comunidade
   const { usuario } = useSessao();
@@ -122,10 +142,63 @@ export default function App() {
     [registros]
   );
 
-  // Ao selecionar (na lista ou no mapa), rola a lista até o card.
+  // Ao selecionar (na lista ou no mapa): no celular, a gaveta vai para o meio; depois rola até o card.
   useEffect(() => {
-    if (selecionado) document.getElementById("card-" + selecionado)?.scrollIntoView({ block: "nearest", behavior: "smooth" });
+    if (!selecionado) return;
+    if (ehMobile()) setFolha("meio");
+    const t = setTimeout(
+      () => document.getElementById("card-" + selecionado)?.scrollIntoView({ block: "nearest", behavior: "smooth" }),
+      ehMobile() ? 280 : 0
+    );
+    return () => clearTimeout(t);
   }, [selecionado]);
+
+  // ----- Arrastar a gaveta (só celular) -----
+  const aoComecarArrasto = (ev: PonteiroEvento<HTMLDivElement>) => {
+    if (!ehMobile() || !folhaRef.current) return;
+    ev.currentTarget.setPointerCapture(ev.pointerId);
+    folhaRef.current.classList.add("arrastando");
+    arrasto.current = { y0: ev.clientY, off0: offsetPx(folha), yUlt: ev.clientY, tUlt: performance.now(), v: 0, moveu: false };
+  };
+  const aoArrastar = (ev: PonteiroEvento<HTMLDivElement>) => {
+    const a = arrasto.current;
+    if (!a || !folhaRef.current) return;
+    const dy = ev.clientY - a.y0;
+    if (Math.abs(dy) > 4) a.moveu = true;
+    const off = Math.min(offsetPx("min"), Math.max(0, a.off0 + dy));
+    folhaRef.current.style.transform = `translateY(${off}px)`;
+    const agora = performance.now();
+    a.v = (ev.clientY - a.yUlt) / (agora - a.tUlt + 1);
+    a.yUlt = ev.clientY;
+    a.tUlt = agora;
+  };
+  const aoSoltar = (ev: PonteiroEvento<HTMLDivElement>) => {
+    const a = arrasto.current;
+    const el = folhaRef.current;
+    arrasto.current = null;
+    if (!a || !el) return;
+    let alvo: Folha;
+    if (!a.moveu) {
+      alvo = folha === "min" ? "meio" : folha === "meio" ? "cheio" : "meio"; // toque simples alterna
+    } else {
+      const atual = Math.min(offsetPx("min"), Math.max(0, a.off0 + (ev.clientY - a.y0)));
+      alvo = ORDEM_FOLHA.reduce((melhor, f) => (Math.abs(offsetPx(f) - atual) < Math.abs(offsetPx(melhor) - atual) ? f : melhor));
+      if (Math.abs(a.v) > 0.5) {
+        const i = ORDEM_FOLHA.indexOf(folha);
+        alvo = ORDEM_FOLHA[Math.min(2, Math.max(0, i + (a.v > 0 ? 1 : -1)))];
+      }
+    }
+    // Reativa a animação, aplica o novo estado e só então solta a posição do dedo (para o "encaixe" ser suave).
+    el.classList.remove("arrastando");
+    flushSync(() => setFolha(alvo));
+    el.style.transform = "";
+  };
+  const aoTeclaFolha = (e: TecladoEvento<HTMLDivElement>) => {
+    if (e.key === "Enter" || e.key === " ") {
+      e.preventDefault();
+      setFolha((f) => (f === "cheio" ? "meio" : f === "meio" ? "min" : "cheio"));
+    }
+  };
 
   const usarGps = () => {
     setErroGps(null);
@@ -181,81 +254,111 @@ export default function App() {
 
   const localDoRegistro = dados.locais.find((l) => l.id === registroLocalId);
 
+  const inicial = usuario ? usuario.apelido.charAt(0).toUpperCase() : "";
+
   return (
-    <div className="layout">
-      <aside className="painel">
-        <div className="painel-topo">
-          <div className="topo-linha">
-            <h1>🍴 Lanches na UFAL</h1>
-            {COMUNIDADE_ATIVA && (
-              <div className="conta">
-                {usuario ? (
-                  <>
-                    <span title="Você está logado">👤 {usuario.apelido}</span>
+    <div className="layout" style={{ ["--folha-visivel" as string]: VISIVEL_CSS[folha] } as CSSProperties}>
+      <header className="barra-topo">
+        <h1 className="titulo so-desktop">🍴 Lanches na UFAL</h1>
+        <div className="linha-busca">
+          <div className="busca-wrap">
+            <span className="lupa" aria-hidden="true">
+              🔍
+            </span>
+            <input
+              className="busca"
+              type="search"
+              value={busca}
+              onChange={(e) => setBusca(e.target.value)}
+              placeholder="Buscar lanche (coxinha, café…)"
+              aria-label="Buscar lanche"
+              enterKeyHint="search"
+              autoComplete="off"
+            />
+            {busca && (
+              <button className="limpar" onClick={() => setBusca("")} aria-label="Limpar busca">
+                ✕
+              </button>
+            )}
+          </div>
+          {COMUNIDADE_ATIVA &&
+            (usuario ? (
+              <div className="conta-wrap">
+                <button className="avatar" onClick={() => setMenuConta((v) => !v)} aria-label={`Conta de ${usuario.apelido}`}>
+                  {inicial}
+                </button>
+                {menuConta && (
+                  <div className="menu-conta" onClick={() => setMenuConta(false)}>
+                    <span className="menu-nome">👤 {usuario.apelido}</span>
                     <button className="btn-link" onClick={() => sair()}>
-                      Sair
+                      Sair da conta
                     </button>
-                  </>
-                ) : (
-                  <>
-                    <button className="btn-link" onClick={() => setAuthAberto("entrar")}>
-                      Entrar
-                    </button>
-                    <button className="btn-mini" onClick={() => setAuthAberto("criar")}>
-                      Criar conta
-                    </button>
-                  </>
+                  </div>
                 )}
               </div>
-            )}
-          </div>
-          <input
-            className="busca"
-            type="search"
-            value={busca}
-            onChange={(e) => setBusca(e.target.value)}
-            placeholder="Buscar lanche (ex.: coxinha, café, água)"
-            aria-label="Buscar lanche"
-          />
-          <div className="chips">
-            {ATALHOS.map((a) => (
-              <button key={a} className="chip" onClick={() => setBusca(a)}>
-                {a}
-              </button>
+            ) : (
+              <div className="conta-botoes">
+                <button className="btn-entrar" onClick={() => setAuthAberto("entrar")}>
+                  Entrar / Criar conta
+                </button>
+              </div>
             ))}
-            {busca && (
-              <button className="chip" onClick={() => setBusca("")}>
-                ✕ limpar
-              </button>
-            )}
-          </div>
-          <div className="linha">
-            <button onClick={usarGps} className={origem?.rotulo === "Minha localização" ? "ativo" : ""}>
-              📍 Minha localização
+        </div>
+
+        <div className="chips-scroll">
+          <button className={"chip" + (origem?.rotulo === "Minha localização" ? " ativo" : "")} onClick={usarGps}>
+            📍 Perto de mim
+          </button>
+          <select
+            className={"chip chip-select" + (origem?.blocoId ? " ativo" : "")}
+            aria-label="Estou perto de"
+            value={origem?.blocoId ?? ""}
+            onChange={(e) => escolherBloco(e.target.value)}
+          >
+            <option value="">{origem?.rotulo === "Minha localização" ? "📌 Ou um bloco…" : "📌 Estou perto de…"}</option>
+            {[...dados.blocos]
+              .sort((a, b) => a.nome.localeCompare(b.nome, "pt-BR"))
+              .map((b) => (
+                <option key={b.id} value={b.id}>
+                  {b.nome}
+                </option>
+              ))}
+          </select>
+          <button className="chip" onClick={() => setOrdem((o) => (o === "dist" ? "preco" : "dist"))}>
+            ↕ {ordem === "dist" ? "Mais perto" : "Mais barato"}
+          </button>
+          <button className={"chip" + (mostrarBlocos ? " ativo" : "")} onClick={() => setMostrarBlocos((v) => !v)}>
+            🏢 Blocos
+          </button>
+          <span className="chips-sep" aria-hidden="true" />
+          {ATALHOS.map((a) => (
+            <button key={a} className={"chip chip-item" + (normalizar(busca) === normalizar(a) ? " ativo" : "")} onClick={() => setBusca(a)}>
+              {a}
             </button>
-            <select aria-label="Estou perto de" value={origem?.blocoId ?? ""} onChange={(e) => escolherBloco(e.target.value)}>
-              <option value="">{origem?.rotulo === "Minha localização" ? "Ou escolha um bloco…" : "Estou perto de…"}</option>
-              {[...dados.blocos]
-                .sort((a, b) => a.nome.localeCompare(b.nome, "pt-BR"))
-                .map((b) => (
-                  <option key={b.id} value={b.id}>
-                    {b.nome}
-                  </option>
-                ))}
-            </select>
-            <select aria-label="Ordenar" value={ordem} onChange={(e) => setOrdem(e.target.value as "dist" | "preco")}>
-              <option value="dist">Ordenar: mais perto</option>
-              <option value="preco">Ordenar: mais barato</option>
-            </select>
-            <button className={mostrarBlocos ? "ativo" : ""} onClick={() => setMostrarBlocos((v) => !v)}>
-              🏢 Blocos
-            </button>
-          </div>
-          {erroGps && <p className="msg-erro">{erroGps}</p>}
-          {erroRegistros && <p className="msg-erro">Não foi possível carregar os registros da comunidade: {erroRegistros}</p>}
+          ))}
+        </div>
+        {erroGps && <p className="msg-erro balao">{erroGps}</p>}
+        {erroRegistros && <p className="msg-erro balao">Não foi possível carregar os registros da comunidade: {erroRegistros}</p>}
+      </header>
+
+      <aside ref={folhaRef} className={"folha folha-" + folha}>
+        <div
+          className="folha-cabeca"
+          onPointerDown={aoComecarArrasto}
+          onPointerMove={aoArrastar}
+          onPointerUp={aoSoltar}
+          onPointerCancel={aoSoltar}
+          onKeyDown={aoTeclaFolha}
+          role="button"
+          tabIndex={0}
+          aria-label="Arraste para abrir ou fechar a lista"
+        >
+          <span className="alca" aria-hidden="true" />
           <p className="resumo">
-            {resultados.length} {resultados.length === 1 ? "local" : "locais"}
-            {origem ? ` · distâncias a partir de: ${origem.rotulo}` : " · escolha onde você está para ver as distâncias"}
+            <strong>
+              {resultados.length} {resultados.length === 1 ? "local" : "locais"}
+            </strong>
+            {origem ? ` · a partir de: ${origem.rotulo}` : " · toque em “Perto de mim” para ver as distâncias"}
           </p>
         </div>
 
