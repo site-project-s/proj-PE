@@ -95,32 +95,46 @@ O build local lê o `.env.local`, então as variáveis já entram no site. O com
 
 ---
 
-## Atualizar o site depois de mudar o projeto (ex.: nova versão visual para celular)
+## Atualizar o site depois de mudar o projeto (passo a passo)
 
-### Se você publicou pela Opção A (GitHub)
+> Esta versão traz visual novo e **camadas de segurança**. Faça na ordem: **A → B → C → D**.
+
+### A) Atualizar o banco (Supabase) — 2 minutos
+1. Abra o Supabase → seu projeto → **SQL Editor** → **New query**.
+2. Abra o arquivo `supabase/schema.sql` da pasta nova, copie **tudo** e cole no editor.
+3. Clique em **Run**. Esperado: "Success. No rows returned". Pode rodar de novo sem medo.
+4. Se der erro, copie a mensagem e me envie (a primeira linha do erro basta).
+
+### B) Atualizar o código local
 1. Descompacte a nova versão **por cima** da sua pasta `lanches-ufal`, aceitando substituir os arquivos.
-   Não apague a pasta oculta `.git` nem o arquivo `.env.local`.
-2. (Só se o `package.json` mudou) `npm install`
-3. Teste local: `npm run dev` e abra http://localhost:3000
-4. Envie para o GitHub:
-   ```bash
-   git add .
-   git commit -m "Nova versão: layout para celular"
-   git push
-   ```
-5. A Cloudflare detecta o push e publica sozinha. Acompanhe em **Workers & Pages → lanches-ufal → Deployments**
-   (status "Success" = no ar). Leva cerca de 1 a 3 minutos.
-6. No celular, se ainda aparecer a versão antiga, recarregue a página (ou feche e abra o navegador).
-   Se você "adicionou à tela inicial" antes, remova o atalho e adicione de novo.
+   **Não apague** a pasta oculta `.git` nem o arquivo `.env.local`.
+2. Abra `.env.local` e confira que continuam as 2 variáveis do Supabase
+   (`NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY`). A linha do Turnstile pode ficar vazia por enquanto.
+3. No terminal, dentro da pasta: `npm install` (não há dependência nova, mas garante que está tudo certo).
+4. Teste: `npm run dev` → http://localhost:3000. Confira a busca, as categorias (🥤 Bebidas etc.) e crie/entre numa conta.
 
-### Se você publicou pela Opção B (direto do computador)
+### C) Publicar na Cloudflare
+**Se você publicou pelo GitHub (Opção A):**
 ```bash
-npm run deploy
+git add .
+git commit -m "Visual novo + seguranca"
+git push
 ```
+Acompanhe em **Workers & Pages → lanches-ufal → Deployments**. "Success" = no ar (1 a 3 minutos).
 
-### Se você trocou a pasta inteira (sem .git)
-Copie de volta a pasta `.git` e o `.env.local` da versão antiga, ou rode `npm run deploy` (Opção B).
+**Se você publicou direto do computador (Opção B):** `npm run deploy`.
 
-### Conferir
-Abra o endereço `.workers.dev` no celular, toque em um ponto do mapa (a lista deve subir até o meio da tela) e
-arraste a alça da lista para cima e para baixo.
+**Se você trocou a pasta inteira e perdeu o `.git`:** copie de volta o `.git` e o `.env.local` da pasta antiga, ou use `npm run deploy`.
+
+### D) Ligar o anti-robô (recomendado) — veja `SEGURANCA.md`, seção 2.3
+Resumo: crie o widget Turnstile → cadastre `NEXT_PUBLIC_TURNSTILE_SITE_KEY` como **variável de build** na Cloudflare → faça um novo deploy → confirme que o widget aparece em "Entrar" → **só então** ative o CAPTCHA no Supabase com a Secret key.
+
+### Conferir no celular
+1. Abra o endereço `.workers.dev` no telefone (se aparecer a versão antiga, feche e abra o navegador).
+2. Toque em "📍 Perto de mim" e em um filtro (🥤 Bebidas): os cartões mostram os itens com emoji e preço.
+3. Toque num ponto do mapa: a lista sobe até o meio. Arraste a alça para cima e para baixo.
+4. Entre na conta, toque em "➕ Registrar lanche" e salve um registro.
+5. Se você tinha adicionado o site à tela inicial, remova o atalho e adicione de novo.
+
+### Verificar os cabeçalhos de segurança
+`curl -I https://SEU-SITE.workers.dev` deve mostrar `content-security-policy`, `x-frame-options: DENY` e `x-content-type-options: nosniff`.

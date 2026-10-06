@@ -1,18 +1,21 @@
 "use client";
 
 import dynamic from "next/dynamic";
-import { useCallback, useEffect, useMemo, useRef, useState, type CSSProperties, type KeyboardEvent as TecladoEvento, type PointerEvent as PonteiroEvento } from "react";
+import {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+  type CSSProperties,
+  type KeyboardEvent as TecladoEvento,
+  type PointerEvent as PonteiroEvento,
+} from "react";
 import { flushSync } from "react-dom";
 import dadosBrutos from "../data/lanches.json";
-import {
-  criarRegistro,
-  excluirRegistro,
-  listarRegistros,
-  mensagemErro,
-  sair,
-  type NovoRegistro,
-} from "../lib/comunidade";
+import { criarRegistro, excluirRegistro, listarRegistros, mensagemErro, sair, type NovoRegistro } from "../lib/comunidade";
 import { formatarDistancia, haversine, minutosAPe, normalizar, reais } from "../lib/geo";
+import { CATEGORIAS, iconeItem, itemEmCategoria } from "../lib/itens";
 import { supabase } from "../lib/supabase";
 import type { Dados, LocalResultado, Origem, Registro } from "../lib/types";
 import { useSessao } from "../lib/useSessao";
@@ -21,6 +24,7 @@ import Estrelas from "./Estrelas";
 import RegistroModal from "./RegistroModal";
 
 const dados = dadosBrutos as Dados;
+const IDS_LOCAIS = dados.locais.map((l) => l.id);
 
 type Folha = "min" | "meio" | "cheio";
 const ORDEM_FOLHA: Folha[] = ["cheio", "meio", "min"];
@@ -32,6 +36,7 @@ const VISIVEL_CSS: Record<Folha, string> = {
   cheio: "calc(100dvh - 132px - env(safe-area-inset-top))", // = --altura-folha no CSS
 };
 const COMUNIDADE_ATIVA = supabase !== null;
+const MAX_COLAPSADO = 4; // itens mostrados num card fechado
 
 // Leaflet usa `window`: o mapa só pode ser carregado no navegador.
 const Mapa = dynamic(() => import("./Mapa"), {
@@ -43,7 +48,7 @@ const Mapa = dynamic(() => import("./Mapa"), {
 const ATALHOS = (() => {
   const cont = new Map<string, number>();
   for (const l of dados.locais) for (const i of new Set(l.itens.map((x) => x.item))) cont.set(i, (cont.get(i) ?? 0) + 1);
-  return [...cont.entries()].sort((a, b) => b[1] - a[1]).slice(0, 6).map(([nome]) => nome);
+  return [...cont.entries()].sort((a, b) => b[1] - a[1]).slice(0, 4).map(([nome]) => nome);
 })();
 
 const ITENS_OFICIAIS = [...new Set(dados.locais.flatMap((l) => l.itens.map((i) => i.item)))].sort((a, b) =>
@@ -52,12 +57,16 @@ const ITENS_OFICIAIS = [...new Set(dados.locais.flatMap((l) => l.itens.map((i) =
 
 export default function App() {
   const [busca, setBusca] = useState("");
+  const [categoria, setCategoria] = useState<string | null>(null);
   const [origem, setOrigem] = useState<Origem | null>(null);
   const [ordem, setOrdem] = useState<"dist" | "preco">("dist");
   const [selecionado, setSelecionado] = useState<string | null>(null);
   const [mostrarBlocos, setMostrarBlocos] = useState(false);
   const [erroGps, setErroGps] = useState<string | null>(null);
   const [menuConta, setMenuConta] = useState(false);
+  const [dica, setDica] = useState(false);
+  const [aviso, setAviso] = useState<string | null>(null);
+  const avisoTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   // Lista "gaveta" no celular: recolhida / meio / cheia (arrastável)
   const [folha, setFolha] = useState<Folha>("meio");
@@ -75,12 +84,35 @@ export default function App() {
   const [registroLocalId, setRegistroLocalId] = useState<string | null>(null);
   const [pendenteLocalId, setPendenteLocalId] = useState<string | null>(null);
 
+  const mostrarAviso = useCallback((msg: string) => {
+    setAviso(msg);
+    if (avisoTimer.current) clearTimeout(avisoTimer.current);
+    avisoTimer.current = setTimeout(() => setAviso(null), 3500);
+  }, []);
+
   useEffect(() => {
     if (!COMUNIDADE_ATIVA) return;
     listarRegistros()
       .then(setRegistros)
       .catch((e) => setErroRegistros(mensagemErro(e)));
   }, []);
+
+  // Dica de boas-vindas (aparece uma vez por aparelho)
+  useEffect(() => {
+    try {
+      if (!localStorage.getItem("lanches-dica-fechada")) setDica(true);
+    } catch {
+      setDica(true);
+    }
+  }, []);
+  const fecharDica = () => {
+    setDica(false);
+    try {
+      localStorage.setItem("lanches-dica-fechada", "1");
+    } catch {
+      /* navegação privada: sem problema */
+    }
+  };
 
   // Depois de entrar, continua o "registrar lanche" que o usuário tinha iniciado.
   useEffect(() => {
@@ -100,16 +132,17 @@ export default function App() {
     return m;
   }, [registros]);
 
+  const q = normalizar(busca);
+  const filtrando = q !== "" || categoria !== null;
+
   const resultados: LocalResultado[] = useMemo(() => {
-    const q = normalizar(busca);
+    const passa = (nome: string) => (q === "" || normalizar(nome).includes(q)) && (categoria === null || itemEmCategoria(nome, categoria));
     const menor = (l: LocalResultado) => Math.min(...l.itens.map((i) => i.preco), ...l.regs.map((r) => r.preco));
     return dados.locais
       .map((l) => {
-        const itens = (q ? l.itens.filter((i) => normalizar(i.item).includes(q)) : [...l.itens]).sort((a, b) =>
-          a.item.localeCompare(b.item, "pt-BR")
-        );
+        const itens = l.itens.filter((i) => passa(i.item)).sort((a, b) => a.item.localeCompare(b.item, "pt-BR"));
         const todos = registrosPorLocal.get(l.id) ?? [];
-        const regs = q ? todos.filter((r) => normalizar(r.item).includes(q)) : todos;
+        const regs = filtrando ? todos.filter((r) => passa(r.item)) : todos;
         const notas = todos.map((r) => r.nota).filter((n): n is number => n !== null);
         const mediaNota = notas.length ? notas.reduce((a, b) => a + b, 0) / notas.length : null;
         const dist = origem ? haversine(origem.lat, origem.lon, l.lat, l.lon) : null;
@@ -123,7 +156,7 @@ export default function App() {
         }
         return menor(a) - menor(b);
       });
-  }, [busca, origem, ordem, registrosPorLocal]);
+  }, [q, categoria, filtrando, origem, ordem, registrosPorLocal]);
 
   // Menor preço de cada item da coleta entre os locais exibidos (para destacar o mais barato).
   const menorPorItem = useMemo(() => {
@@ -207,7 +240,10 @@ export default function App() {
       return;
     }
     navigator.geolocation.getCurrentPosition(
-      (p) => setOrigem({ lat: p.coords.latitude, lon: p.coords.longitude, rotulo: "Minha localização" }),
+      (p) => {
+        setOrigem({ lat: p.coords.latitude, lon: p.coords.longitude, rotulo: "Minha localização" });
+        fecharDica();
+      },
       () => setErroGps("Não foi possível obter sua localização. Escolha um bloco na lista."),
       { enableHighAccuracy: true, timeout: 10000 }
     );
@@ -237,9 +273,10 @@ export default function App() {
 
   const salvarRegistro = async (r: NovoRegistro) => {
     if (!usuario) throw new Error("Entre na sua conta para registrar.");
-    const novo = await criarRegistro(r, usuario.id);
+    const novo = await criarRegistro(r, usuario.id, IDS_LOCAIS);
     setRegistros((atual) => [novo, ...atual]);
     setRegistroLocalId(null);
+    mostrarAviso("Registro salvo! Obrigado por ajudar a galera 🙌");
   };
 
   const apagarRegistro = async (id: string) => {
@@ -247,19 +284,31 @@ export default function App() {
     try {
       await excluirRegistro(id);
       setRegistros((atual) => atual.filter((r) => r.id !== id));
+      mostrarAviso("Registro excluído");
     } catch (e) {
       alert(mensagemErro(e));
     }
   };
 
-  const localDoRegistro = dados.locais.find((l) => l.id === registroLocalId);
+  const limparFiltros = () => {
+    setBusca("");
+    setCategoria(null);
+  };
 
+  const localDoRegistro = dados.locais.find((l) => l.id === registroLocalId);
   const inicial = usuario ? usuario.apelido.charAt(0).toUpperCase() : "";
+  const nomeCategoria = CATEGORIAS.find((c) => c.id === categoria)?.rotulo;
 
   return (
     <div className="layout" style={{ ["--folha-visivel" as string]: VISIVEL_CSS[folha] } as CSSProperties}>
       <header className="barra-topo">
-        <h1 className="titulo so-desktop">🍴 Lanches na UFAL</h1>
+        <div className="marca so-desktop">
+          <span className="marca-emoji" aria-hidden="true">🍴</span>
+          <div>
+            <h1 className="titulo">Lanches na UFAL</h1>
+            <p className="subtitulo">Onde comer no campus, quanto custa e quão perto fica</p>
+          </div>
+        </div>
         <div className="linha-busca">
           <div className="busca-wrap">
             <span className="lupa" aria-hidden="true">
@@ -269,11 +318,12 @@ export default function App() {
               className="busca"
               type="search"
               value={busca}
-              onChange={(e) => setBusca(e.target.value)}
+              onChange={(e) => setBusca(e.target.value.slice(0, 60))}
               placeholder="Buscar lanche (coxinha, café…)"
               aria-label="Buscar lanche"
               enterKeyHint="search"
               autoComplete="off"
+              maxLength={60}
             />
             {busca && (
               <button className="limpar" onClick={() => setBusca("")} aria-label="Limpar busca">
@@ -284,24 +334,28 @@ export default function App() {
           {COMUNIDADE_ATIVA &&
             (usuario ? (
               <div className="conta-wrap">
-                <button className="avatar" onClick={() => setMenuConta((v) => !v)} aria-label={`Conta de ${usuario.apelido}`}>
+                <button className="avatar" onClick={() => setMenuConta((v) => !v)} aria-label={`Conta de ${usuario.apelido}`} aria-expanded={menuConta}>
                   {inicial}
                 </button>
                 {menuConta && (
                   <div className="menu-conta" onClick={() => setMenuConta(false)}>
                     <span className="menu-nome">👤 {usuario.apelido}</span>
-                    <button className="btn-link" onClick={() => sair()}>
+                    <button
+                      className="btn-link"
+                      onClick={async () => {
+                        await sair();
+                        mostrarAviso("Você saiu da conta");
+                      }}
+                    >
                       Sair da conta
                     </button>
                   </div>
                 )}
               </div>
             ) : (
-              <div className="conta-botoes">
-                <button className="btn-entrar" onClick={() => setAuthAberto("entrar")}>
-                  Entrar / Criar conta
-                </button>
-              </div>
+              <button className="btn-entrar" onClick={() => setAuthAberto("entrar")}>
+                Entrar
+              </button>
             ))}
         </div>
 
@@ -331,14 +385,19 @@ export default function App() {
             🏢 Blocos
           </button>
           <span className="chips-sep" aria-hidden="true" />
+          {CATEGORIAS.map((c) => (
+            <button key={c.id} className={"chip chip-cat" + (categoria === c.id ? " ativo" : "")} onClick={() => setCategoria(categoria === c.id ? null : c.id)}>
+              {c.emoji} {c.rotulo}
+            </button>
+          ))}
           {ATALHOS.map((a) => (
-            <button key={a} className={"chip chip-item" + (normalizar(busca) === normalizar(a) ? " ativo" : "")} onClick={() => setBusca(a)}>
-              {a}
+            <button key={a} className={"chip chip-item" + (q !== "" && q === normalizar(a) ? " ativo" : "")} onClick={() => setBusca(a)}>
+              {iconeItem(a)} {a}
             </button>
           ))}
         </div>
-        {erroGps && <p className="msg-erro balao">{erroGps}</p>}
-        {erroRegistros && <p className="msg-erro balao">Não foi possível carregar os registros da comunidade: {erroRegistros}</p>}
+        {erroGps && <p className="msg-erro balao" role="alert">{erroGps}</p>}
+        {erroRegistros && <p className="msg-erro balao" role="alert">Não foi possível carregar os registros da comunidade: {erroRegistros}</p>}
       </header>
 
       <aside ref={folhaRef} className={"folha folha-" + folha}>
@@ -356,24 +415,50 @@ export default function App() {
           <span className="alca" aria-hidden="true" />
           <p className="resumo">
             <strong>
-              {resultados.length} {resultados.length === 1 ? "local" : "locais"}
+              {resultados.length} {resultados.length === 1 ? "lugar" : "lugares"}
             </strong>
-            {origem ? ` · a partir de: ${origem.rotulo}` : " · toque em “Perto de mim” para ver as distâncias"}
+            {filtrando && ` com ${[busca.trim(), nomeCategoria].filter(Boolean).join(" · ")}`}
+            {origem ? ` · a partir de: ${origem.rotulo}` : ""}
           </p>
         </div>
 
         <div className="lista">
-          {resultados.length === 0 && <p className="vazio">Nenhum local vende “{busca}”. Tente outro nome.</p>}
+          {dica && (
+            <div className="dica" role="note">
+              <span className="dica-emoji" aria-hidden="true">👋</span>
+              <p>
+                <strong>Oi!</strong> Toque em <strong>📍 Perto de mim</strong> para ver quanto falta a pé até cada lugar, ou escolha um filtro como{" "}
+                <strong>🥤 Bebidas</strong>. Toque num ponto do mapa para ver os preços.
+              </p>
+              <button className="dica-fechar" onClick={fecharDica} aria-label="Fechar dica">
+                ✕
+              </button>
+            </div>
+          )}
+
+          {resultados.length === 0 && (
+            <div className="vazio">
+              <span className="vazio-emoji" aria-hidden="true">🤔</span>
+              <p>Não encontramos nenhum lugar{busca.trim() ? ` com “${busca.trim()}”` : ""}.</p>
+              <button className="btn-mini" onClick={limparFiltros}>
+                Limpar filtros
+              </button>
+            </div>
+          )}
+
           {resultados.map((l) => {
             const aberto = l.id === selecionado;
-            const mostrarRegs = (aberto || busca.trim() !== "") && l.regs.length > 0;
+            const mostrarTudo = aberto || filtrando;
+            const itensVisiveis = mostrarTudo ? l.itens : l.itens.slice(0, MAX_COLAPSADO);
+            const escondidos = l.itens.length - itensVisiveis.length;
+            const mostrarRegs = mostrarTudo && l.regs.length > 0;
             return (
               <div key={l.id} id={"card-" + l.id} className={"card" + (aberto ? " sel" : "")} onClick={() => setSelecionado(l.id)}>
                 <div className="card-topo">
                   <span className="card-nome">{l.nome}</span>
                   {l.dist !== null && (
                     <span className="card-dist">
-                      {formatarDistancia(l.dist)} · ~{minutosAPe(l.dist)} min a pé
+                      🚶 {formatarDistancia(l.dist)} · {minutosAPe(l.dist)} min
                     </span>
                   )}
                 </div>
@@ -381,25 +466,22 @@ export default function App() {
                   Perto de {l.blocoMaisProximo} ({formatarDistancia(l.distBlocoM)})
                 </div>
 
-                {l.itens.length > 0 && (
-                  <div className="itens">
-                    {l.itens.map((i) => {
+                {itensVisiveis.length > 0 && (
+                  <div className="tiles">
+                    {itensVisiveis.map((i) => {
                       const ref = menorPorItem.get(i.item);
                       const barato = ref !== undefined && ref.n > 1 && i.preco === ref.min;
                       return (
-                        <div key={i.item} style={{ display: "contents" }}>
-                          <span>{i.item}</span>
-                          <span
-                            className={"preco" + (barato ? " mais-barato" : "")}
-                            title={barato ? "Menor preço entre os locais exibidos" : undefined}
-                          >
-                            {reais(i.preco)}
-                          </span>
+                        <div key={i.item} className={"tile" + (barato ? " tile-barato" : "")} title={barato ? "Menor preço entre os locais exibidos" : undefined}>
+                          <span className="tile-emoji" aria-hidden="true">{iconeItem(i.item)}</span>
+                          <span className="tile-nome">{i.item}</span>
+                          <span className="tile-preco">{reais(i.preco)}</span>
                         </div>
                       );
                     })}
                   </div>
                 )}
+                {escondidos > 0 && <p className="ver-mais">+ {escondidos} {escondidos === 1 ? "item" : "itens"} · toque para ver todos</p>}
 
                 {COMUNIDADE_ATIVA && l.totalRegs > 0 && (
                   <div className="comunidade-resumo">
@@ -418,7 +500,9 @@ export default function App() {
                     {l.regs.map((r) => (
                       <div key={r.id} className="reg">
                         <div className="reg-topo">
-                          <strong>{r.item}</strong>
+                          <strong>
+                            {iconeItem(r.item)} {r.item}
+                          </strong>
                           <span className="preco">{reais(r.preco)}</span>
                         </div>
                         {r.nota !== null && <Estrelas nota={r.nota} />}
@@ -443,12 +527,12 @@ export default function App() {
                 )}
 
                 <div className="acoes">
-                  <a className="rota" href={linkRota(l)} target="_blank" rel="noreferrer" onClick={(e) => e.stopPropagation()}>
+                  <a className="rota" href={linkRota(l)} target="_blank" rel="noopener noreferrer" onClick={(e) => e.stopPropagation()}>
                     Como chegar →
                   </a>
                   {COMUNIDADE_ATIVA && (
                     <button
-                      className="btn-mini"
+                      className="btn-cta"
                       onClick={(e) => {
                         e.stopPropagation();
                         abrirRegistro(l.id);
@@ -464,7 +548,7 @@ export default function App() {
           <p className="aviso">
             Preços da coleta: {new Date(dados.coletadoEm + "T12:00:00").toLocaleDateString("pt-BR")}, por alunos da UFAL (projeto de
             Probabilidade e Estatística). Podem ter mudado. Os registros da comunidade são feitos por usuários e não são verificados.
-            Verde = menor preço do item (coleta) entre os locais exibidos. Distâncias em linha reta; o tempo a pé é aproximado.
+            Verde = menor preço do item (coleta) entre os lugares exibidos. Distâncias em linha reta; o tempo a pé é aproximado.
           </p>
         </div>
       </aside>
@@ -481,6 +565,12 @@ export default function App() {
         />
       </section>
 
+      {aviso && (
+        <div className="toast" role="status" aria-live="polite">
+          {aviso}
+        </div>
+      )}
+
       {authAberto && (
         <AuthModal
           modoInicial={authAberto}
@@ -488,13 +578,17 @@ export default function App() {
             setAuthAberto(null);
             setPendenteLocalId(null);
           }}
-          onSucesso={() => setAuthAberto(null)}
+          onSucesso={(msg) => {
+            setAuthAberto(null);
+            mostrarAviso(msg);
+          }}
         />
       )}
       {registroLocalId && localDoRegistro && (
         <RegistroModal
           localId={localDoRegistro.id}
           localNome={localDoRegistro.nome}
+          idsConhecidos={IDS_LOCAIS}
           sugestoes={sugestoes}
           onSalvar={salvarRegistro}
           onFechar={() => setRegistroLocalId(null)}

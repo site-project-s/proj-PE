@@ -83,6 +83,11 @@ No celular (telas de até 800 px) o mapa ocupa a tela toda, a busca e os filtros
 (filtros em uma linha rolável) e a lista vira uma "gaveta" que se arrasta: recolhida, meio ou cheia.
 Também há atalho para "Adicionar à tela inicial" (manifest e ícones em `public/`).
 
+## Segurança
+
+Camadas de proteção (validação, RLS, permissões mínimas, limites de uso, cabeçalhos CSP, anti-robô
+Turnstile) estão descritas em `SEGURANCA.md`. Ao atualizar, rode de novo o `supabase/schema.sql`.
+
 ## Observações
 
 - Distâncias em linha reta (Haversine); o tempo a pé assume cerca de 5 km/h.
