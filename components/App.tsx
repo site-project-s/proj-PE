@@ -302,8 +302,9 @@ export default function App() {
     setBusca(texto.slice(0, 60));
     if (texto.trim() !== "") setCategorias([]);
   };
+  // Tocar de novo no atalho que já está ativo desliga o filtro.
   const escolherAtalho = (nome: string) => {
-    setBusca(nome);
+    setBusca((atual) => (normalizar(atual) === normalizar(nome) ? "" : nome));
     setCategorias([]);
   };
   const alternarCategoria = (id: string) => {
@@ -407,7 +408,7 @@ export default function App() {
             </button>
           ))}
           {ATALHOS.map((a) => (
-            <button key={a} className={"chip chip-item" + (q !== "" && q === normalizar(a) ? " ativo" : "")} onClick={() => escolherAtalho(a)}>
+            <button key={a} className={"chip chip-item" + (q !== "" && q === normalizar(a) ? " ativo" : "")} aria-pressed={q !== "" && q === normalizar(a)} onClick={() => escolherAtalho(a)}>
               {iconeItem(a)} {a}
             </button>
           ))}
