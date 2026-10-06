@@ -57,7 +57,7 @@ const ITENS_OFICIAIS = [...new Set(dados.locais.flatMap((l) => l.itens.map((i) =
 
 export default function App() {
   const [busca, setBusca] = useState("");
-  const [categoria, setCategoria] = useState<string | null>(null);
+  const [categorias, setCategorias] = useState<string[]>([]); // várias categorias = "OU"
   const [origem, setOrigem] = useState<Origem | null>(null);
   const [ordem, setOrdem] = useState<"dist" | "preco">("dist");
   const [selecionado, setSelecionado] = useState<string | null>(null);
@@ -133,10 +133,13 @@ export default function App() {
   }, [registros]);
 
   const q = normalizar(busca);
-  const filtrando = q !== "" || categoria !== null;
+  const filtrando = q !== "" || categorias.length > 0;
 
   const resultados: LocalResultado[] = useMemo(() => {
-    const passa = (nome: string) => (q === "" || normalizar(nome).includes(q)) && (categoria === null || itemEmCategoria(nome, categoria));
+    // Busca por texto e categorias nunca se acumulam (a interface limpa um ao escolher o outro).
+    // Várias categorias valem como "OU": Refeições + Salgados mostra os dois grupos.
+    const passa = (nome: string) =>
+      q !== "" ? normalizar(nome).includes(q) : categorias.length === 0 || categorias.some((c) => itemEmCategoria(nome, c));
     const menor = (l: LocalResultado) => Math.min(...l.itens.map((i) => i.preco), ...l.regs.map((r) => r.preco));
     return dados.locais
       .map((l) => {
@@ -156,7 +159,7 @@ export default function App() {
         }
         return menor(a) - menor(b);
       });
-  }, [q, categoria, filtrando, origem, ordem, registrosPorLocal]);
+  }, [q, categorias, filtrando, origem, ordem, registrosPorLocal]);
 
   // Menor preço de cada item da coleta entre os locais exibidos (para destacar o mais barato).
   const menorPorItem = useMemo(() => {
@@ -292,12 +295,25 @@ export default function App() {
 
   const limparFiltros = () => {
     setBusca("");
-    setCategoria(null);
+    setCategorias([]);
+  };
+  // Escolher um filtro desfaz o outro tipo: nada de "pesquisa dentro de pesquisa".
+  const digitarBusca = (texto: string) => {
+    setBusca(texto.slice(0, 60));
+    if (texto.trim() !== "") setCategorias([]);
+  };
+  const escolherAtalho = (nome: string) => {
+    setBusca(nome);
+    setCategorias([]);
+  };
+  const alternarCategoria = (id: string) => {
+    setBusca("");
+    setCategorias((atual) => (atual.includes(id) ? atual.filter((c) => c !== id) : [...atual, id]));
   };
 
   const localDoRegistro = dados.locais.find((l) => l.id === registroLocalId);
   const inicial = usuario ? usuario.apelido.charAt(0).toUpperCase() : "";
-  const nomeCategoria = CATEGORIAS.find((c) => c.id === categoria)?.rotulo;
+  const nomeCategorias = CATEGORIAS.filter((c) => categorias.includes(c.id)).map((c) => c.rotulo).join(" ou ");
 
   return (
     <div className="layout" style={{ ["--folha-visivel" as string]: VISIVEL_CSS[folha] } as CSSProperties}>
@@ -318,7 +334,7 @@ export default function App() {
               className="busca"
               type="search"
               value={busca}
-              onChange={(e) => setBusca(e.target.value.slice(0, 60))}
+              onChange={(e) => digitarBusca(e.target.value)}
               placeholder="Buscar lanche (coxinha, café…)"
               aria-label="Buscar lanche"
               enterKeyHint="search"
@@ -386,12 +402,12 @@ export default function App() {
           </button>
           <span className="chips-sep" aria-hidden="true" />
           {CATEGORIAS.map((c) => (
-            <button key={c.id} className={"chip chip-cat" + (categoria === c.id ? " ativo" : "")} onClick={() => setCategoria(categoria === c.id ? null : c.id)}>
+            <button key={c.id} className={"chip chip-cat" + (categorias.includes(c.id) ? " ativo" : "")} aria-pressed={categorias.includes(c.id)} onClick={() => alternarCategoria(c.id)}>
               {c.emoji} {c.rotulo}
             </button>
           ))}
           {ATALHOS.map((a) => (
-            <button key={a} className={"chip chip-item" + (q !== "" && q === normalizar(a) ? " ativo" : "")} onClick={() => setBusca(a)}>
+            <button key={a} className={"chip chip-item" + (q !== "" && q === normalizar(a) ? " ativo" : "")} onClick={() => escolherAtalho(a)}>
               {iconeItem(a)} {a}
             </button>
           ))}
@@ -417,7 +433,7 @@ export default function App() {
             <strong>
               {resultados.length} {resultados.length === 1 ? "lugar" : "lugares"}
             </strong>
-            {filtrando && ` com ${[busca.trim(), nomeCategoria].filter(Boolean).join(" · ")}`}
+            {filtrando && ` com ${q !== "" ? busca.trim() : nomeCategorias}`}
             {origem ? ` · a partir de: ${origem.rotulo}` : ""}
           </p>
         </div>

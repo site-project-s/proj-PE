@@ -1,8 +1,9 @@
 "use client";
 
 import "leaflet/dist/leaflet.css";
+import { divIcon, type DivIcon } from "leaflet";
 import { useEffect } from "react";
-import { CircleMarker, MapContainer, Popup, TileLayer, Tooltip, useMap } from "react-leaflet";
+import { CircleMarker, MapContainer, Marker, Popup, TileLayer, Tooltip, useMap } from "react-leaflet";
 import { reais } from "../lib/geo";
 import type { Bloco, LocalResultado, Origem } from "../lib/types";
 
@@ -15,6 +16,31 @@ type Props = {
   onSelect: (id: string) => void;
   onRegistrar?: (id: string) => void; // ausente quando as contas não estão configuradas
 };
+
+/** Pin no estilo "gota" (como o do Google Maps). A ponta de baixo fica exatamente sobre a coordenada. */
+const iconesPin = new Map<string, DivIcon>();
+function iconePin(selecionado: boolean, mobile: boolean): DivIcon {
+  const chave = `${selecionado}-${mobile}`;
+  const guardado = iconesPin.get(chave);
+  if (guardado) return guardado;
+  const w = (selecionado ? 32 : 24) + (mobile ? 4 : 0);
+  const h = Math.round((w * 32) / 24);
+  const cor = selecionado ? "#f59e0b" : "#1f4e79";
+  const furo = selecionado ? "#7c2d12" : "#ffffff";
+  const icone = divIcon({
+    className: selecionado ? "pin pin-sel" : "pin",
+    html:
+      `<svg width="${w}" height="${h}" viewBox="0 0 24 32" aria-hidden="true">` +
+      `<path d="M12 .8C5.8.8.8 5.8.8 12c0 8.4 11.2 19.2 11.2 19.2S23.2 20.4 23.2 12C23.2 5.8 18.2.8 12 .8z" fill="${cor}" stroke="#fff" stroke-width="1.6"/>` +
+      `<circle cx="12" cy="12" r="4.4" fill="${furo}"/></svg>`,
+    iconSize: [w, h],
+    iconAnchor: [w / 2, h],
+    popupAnchor: [0, -h + 4],
+    tooltipAnchor: [0, -h + 6],
+  });
+  iconesPin.set(chave, icone);
+  return icone;
+}
 
 const ehMobile = () => typeof window !== "undefined" && window.matchMedia("(max-width: 800px)").matches;
 
@@ -85,21 +111,17 @@ export default function Mapa({ locais, blocos, mostrarBlocos, origem, selecionad
       {locais.map((l) => {
         const sel = l.id === selecionado;
         return (
-          <CircleMarker
+          <Marker
             key={l.id}
-            center={[l.lat, l.lon]}
-            radius={(sel ? 14 : 10) + (mobile ? 2 : 0)}
-            pathOptions={{
-              color: sel ? "#b45309" : "#fff",
-              fillColor: sel ? "#f59e0b" : "#1f4e79",
-              fillOpacity: 0.95,
-              weight: sel ? 3 : 2.5,
-            }}
+            position={[l.lat, l.lon]}
+            icon={iconePin(sel, mobile)}
+            zIndexOffset={sel ? 1000 : 0}
+            title={l.nome}
             eventHandlers={{ click: () => onSelect(l.id) }}
           >
-            {/* No celular, o nome aparece sobre o ponto selecionado e os detalhes ficam na lista. */}
+            {/* No celular, o nome aparece sobre o pin selecionado e os detalhes ficam na lista. */}
             {mobile && sel && (
-              <Tooltip permanent direction="top" offset={[0, -10]}>
+              <Tooltip permanent direction="top" offset={[0, 0]}>
                 {l.nome}
               </Tooltip>
             )}
@@ -124,7 +146,7 @@ export default function Mapa({ locais, blocos, mostrarBlocos, origem, selecionad
                 )}
               </Popup>
             )}
-          </CircleMarker>
+          </Marker>
         );
       })}
 
